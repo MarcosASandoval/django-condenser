@@ -1,0 +1,75 @@
+Sequece of events:
+1. Render index
+    Backend:
+        ☐ index view
+    Frontend:
+        ☐ ajax: get installed apps
+
+2. Return list of installed apps
+    Backend:
+        ✔ get_installed_apps method @done(2014-09-07 12:28) @project(    Backend)
+        ☐ get_installed_apps view
+
+3. Display list of installed apps
+    Frontend:
+        ☐ display list of apps
+
+4. Select app to condense
+    Frontend:
+        ☐ ajax: get models in selected app
+
+5. Return list of models in app
+    Backend:
+        ✔ get_models method @done(2014-09-07 12:29) @project(    Backend)
+        ☐ get_models view
+
+6. Display List of models
+    Frontend:
+        ☐ display list of models
+
+7. Select model from app
+    Frontend:
+        ☐ ajax: get model fields
+
+8. Return fields in selected model
+    Backend:
+        ✔ get_model_fields method @done(2014-09-07 12:29) @project(    Backend)
+        ☐ get_model_fields view
+
+9. Display list of fields
+    frontend:
+        ☐ display list of fields
+
+10. Select field to search by, search
+    frontend:
+        ☐ ajax: submit search terms and app, model, and field selection
+
+11. Create search query based on selections
+    backend:
+        ☐ method to return query
+
+12. Return list of objects from query
+    backend:
+        ☐ GET: view returning list of objects
+
+13. Select 'canonical' object
+
+14. Select objects to condense into canonical object
+
+15. Submit selections
+    frontend:
+        ☐ ajax: submit selections
+
+16. Condense!
+    backend:
+        ☐ POST: process incoming data
+        ☐ method that grabs all related objects
+        ☐ method that reassigns all related objects to 'canonical' object
+        ☐ method that then deletes all other objects
+        ☐ method returning results
+
+17. Display results
+    backend:
+        ☐ results view
+    frontend:
+        ☐ display results

@@ -2,7 +2,7 @@ import sys
 from django.test import TestCase
 from django.conf import settings
 from django.db import models as djmodels
-import condenser.initialize
+import condenser
 
 class modela(djmodels.Model):
     name = djmodels.CharField('Name', max_length = 20)
@@ -30,7 +30,6 @@ class InitializeTests(TestCase):
         modela.__module__ = 'testapplication1.models'
         sys.modules['testapplication1'] = testapplication1
         sys.modules['testapplication1.models'] = models
-        
 
     def test_get_installed_applications_method(self):
         """
@@ -39,7 +38,11 @@ class InitializeTests(TestCase):
         
         settings.INSTALLED_APPS = self.apps
         expectedlist = ['testapplication1', 'application2']
-        self.assertEquals(condenser.initialize.get_installed_apps(), expectedlist)
+        self.assertEquals(
+                condenser.get_installed_apps(),
+                expectedlist,
+                "Did not retrieve list of installed apps properly"
+            )
 
     def test_get_app_models(self):
         """
@@ -48,12 +51,20 @@ class InitializeTests(TestCase):
 
         settings.INSTALLED_APPS = self.apps
         expectedlist = [('modela', modela)]
-        self.assertEquals(condenser.initialize.get_app_models('testapplication1.models'), expectedlist)
+        self.assertEquals(
+                condenser.get_app_models('testapplication1.models'),
+                expectedlist,
+                "Did not retrieve list of models properly"
+            )
 
     def test_get_model_fields(self):
         """
         Test whether we can get the model's fields properly
         """
 
-        expectedlist = [('name', djmodels.CharField)]
-        self.assertEquals(condenser.initialize.get_model_fields('application1', 'modela'), expectedlist)
+        expectedlist = ['id', 'name']
+        self.assertEquals(
+                condenser.get_model_fields('testapplication1.models', 'modela'),
+                expectedlist,
+                "Did not properly retrieve list of fields in model"
+            )
