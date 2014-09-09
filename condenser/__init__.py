@@ -26,11 +26,18 @@ def get_app_models(app):
             # breaking our unit tests
             lambda member: inspect.isclass(member) and member.__module__ == app
         )
+#    models_list = []
+#    for member in inspect.getmembers(module):
+#        if inspect.isclass(member[1]):
+#            print member, ': ', member[1].__module__
+#            print member[1].__module__ == app, module.__name__
+#            models_list.append(member)
 
     return models_list
 
 def get_model_fields(app, model):
     app = importlib.import_module(app)
     model = getattr(app, model)
+    print model
     fields = model._meta.get_all_field_names()
     return fields
