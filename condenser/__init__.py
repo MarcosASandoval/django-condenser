@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.db import models as djmodels
 import importlib
 import inspect
 
@@ -23,21 +22,14 @@ def get_app_models(app):
     models_list = inspect.getmembers(module,
             # Not a fan of having to compare the module name to the parameter 'app',
             # but the import_module method will uncover the true namespace of the module,
-            # breaking our unit tests
+            # breaking our unit tests. Otherwise we could replace app with module.__name__
             lambda member: inspect.isclass(member) and member.__module__ == app
         )
-#    models_list = []
-#    for member in inspect.getmembers(module):
-#        if inspect.isclass(member[1]):
-#            print member, ': ', member[1].__module__
-#            print member[1].__module__ == app, module.__name__
-#            models_list.append(member)
 
     return models_list
 
 def get_model_fields(app, model):
     app = importlib.import_module(app)
     model = getattr(app, model)
-    print model
     fields = model._meta.get_all_field_names()
     return fields
