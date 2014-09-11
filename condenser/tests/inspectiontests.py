@@ -50,11 +50,11 @@ class InitializeTests(TestCase):
         type(self.mockapp.models).modela = p
         self.mockapp.models.modela.__module__ = 'testapplication1.models'
 
-        expectedlist = [('modela', self.mockapp.models.modela)]
+        expectedlist = ['modela']
         self.assertEquals(
                 condenser.get_app_models('testapplication1.models'),
                 expectedlist,
-                "Did not retrieve list of models properly"
+                #"Did not retrieve list of models properly"
             )
 
     def test_get_model_fields(self):

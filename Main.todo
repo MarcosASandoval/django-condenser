@@ -2,12 +2,13 @@ Sequece of events:
 	1. Render index
 		Backend:
 			[ ] index view
+			[ ] index template
 		Frontend:
 			[ ] TODO ajax: get installed apps
 	2. Return list of installed apps
 		Backend:
-			[ ] DONE get_installed_apps method
-			[ ] TODO get_installed_apps view
+			[x] TODO get_installed_apps method
+			[x] TODO get_installed_apps view
 	3. Display list of installed apps
 		Frontend:
 			[ ] TODO display list of apps
@@ -16,8 +17,8 @@ Sequece of events:
 			[ ] TODO ajax: GET list of models in selected app
 	5. Return list of models in app
 		Backend:
-			[ ] DONE get_models method
-			[ ] TODO get_models view
+			[x] TODO get_models method
+			[x] TODO get_models view
 	6. Display List of models
 		Frontend:
 			[ ] TODO display list of models
@@ -26,11 +27,11 @@ Sequece of events:
 			[ ] TODO ajax: get model fields
 	8. Return fields in selected model
 		Backend:
-			[ ] DONE get_model_fields method
-			[ ] TODO get_model_fields view
+			[x] TODO get_model_fields method
+			[x] TODO get_model_fields view
 	9. Display list of fields
 		Frontend:
-			[ ] TODO display list of felds
+			[ ] TODO display list of fields
 	10. Select field to search by, search
 		Frontend:
 			[ ] TODO ajax: submit search terms and app, model, and field selection
