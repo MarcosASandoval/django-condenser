@@ -1,5 +1,5 @@
 from django.conf import settings
-import importlib
+from django.db.models import get_app
 import inspect
 
 def get_installed_apps():
@@ -16,26 +16,24 @@ def get_installed_apps():
 def get_app_models(app):
     """
     Imports the app that is passed as parameter
-    returns list of tuples (MODELNAME, MODELCLASS)
     """
     if not app.endswith('.models'):
-        app += '.models'
-    
-    module = importlib.import_module(app)
+        appmodels = app + '.models'
+
+    module = get_app(app)
+
     models_list = []
     for member in inspect.getmembers(
             module,
-            lambda member: inspect.isclass(member) and member.__module__ == app
+            lambda member: inspect.isclass(member) and member.__module__ == appmodels
         ):
         models_list.append(member[0])
 
     return models_list
 
 def get_model_fields(app, model):
-    if not app.endswith('.models'):
-        app += '.models'
-    
-    app = importlib.import_module(app)
-    model = getattr(app, model)
+    module = get_app(app)
+
+    model = getattr(module, model)
     fields = model._meta.get_all_field_names()
     return fields

@@ -40,11 +40,12 @@ class InitializeTests(TestCase):
                 "Did not retrieve list of installed apps properly"
             )
 
-    def test_get_app_models(self):
+    @mock.patch('condenser.get_app')
+    def test_get_app_models(self, get_app_mock):
         """
         Test whether we can get the app's models properly
         """
-
+        get_app_mock.return_value = self.mockapp.models
         # ensure that testapplication1.models.modela returns a class
         p = mock.PropertyMock(return_value=type(self.mockapp.models.modela))
         type(self.mockapp.models).modela = p
@@ -52,17 +53,19 @@ class InitializeTests(TestCase):
 
         expectedlist = ['modela']
         self.assertEquals(
-                condenser.get_app_models('testapplication1.models'),
+                condenser.get_app_models('testapplication1'),
                 expectedlist,
                 #"Did not retrieve list of models properly"
             )
 
-    def test_get_model_fields(self):
+    @mock.patch('condenser.get_app')
+    def test_get_model_fields(self, get_app_mock):
         """
         Test whether we can get the model's fields properly
         """
         
-        fields = condenser.get_model_fields('testapplication1.models', 'modela')
+        get_app_mock.return_value = self.mockapp.models
+        fields = condenser.get_model_fields('testapplication1', 'modela')
         
         # This ensures that modela._meta.get_all_field_names is called
         self.mockapp.models.modela._meta.get_all_field_names.assert_called_with()
