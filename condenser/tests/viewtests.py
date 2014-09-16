@@ -13,6 +13,9 @@ class inspectorViewTests(TestCase):
 
     @mock.patch('condenser.views.get_installed_apps')
     def test_inspector_view_gets_installed_apps(self, mockget):
+        """
+        Test that the inspector view returns the correct list of installed apps
+        """
         expected_list = ['testapp1', 'testapp2', 'testapp3']
         mockget.return_value = expected_list
 
@@ -27,6 +30,10 @@ class inspectorViewTests(TestCase):
 
     @mock.patch('condenser.views.get_app_models')
     def test_inspector_view_gets_app_models(self, mockget):
+        """
+        Test that the inspector view returns the correct list of models in the app
+        based on URL parameters
+        """
         expected_list = ['modela', 'modelb', 'modelc']
         mockget.return_value = expected_list
 
@@ -41,6 +48,9 @@ class inspectorViewTests(TestCase):
 
     @mock.patch('condenser.views.get_model_fields')
     def test_inspector_view_gets_model_fields(self, mockget):
+        """
+        Tests that the inspector view returns the list of model fields properly
+        """
         expected_list = ['id', 'name', 'something']
         mockget.return_value = expected_list
 
@@ -56,6 +66,10 @@ class inspectorViewTests(TestCase):
     @mock.patch('condenser.views.serializers')
     @mock.patch('condenser.views.get_model')
     def test_inspector_view_gets_list_of_model_objects(self, get_model_mock, serial_mock):
+        """
+        Tests that the inspector view returns the correct list of model objects based on the
+        URL parameters
+        """
         get_model_mock().objects.filter.return_value = 'returnvals'
 
         request = self.req.get('/condenser/inspector?app=scoreboard&model=modela&field=name&value=testvalue')
@@ -73,6 +87,10 @@ class indexViewTests(TestCase):
 
     @mock.patch('condenser.views.render')
     def test_index_view(self, render_mock):
+        """
+        Tests that the index view calls the render function with the condenser.html
+        template as part of the arguments
+        """
         request = self.req.get('/condenser')
 
         response = views.index(request)
@@ -84,6 +102,10 @@ class condenseViewTests(TestCase):
         self.req = RequestFactory()
 
     def test_condense_view_without_data(self):
+        """
+        Tests that the condense view returns the right response when the proper
+        parameters aren't passed
+        """
         request = self.req.get('/condenser/condense')
 
         response = views.condense(request)
@@ -92,6 +114,9 @@ class condenseViewTests(TestCase):
 
     @mock.patch('condenser.views.condenser')
     def test_condense_calls_condense(self, condenser_mock):
+        """
+        Tests that the condense view instantiates the condenser class
+        """
         request = self.req.post('condenser/condense', {'canon': '1', 'condense': ['1','2','3','4']})
         response = views.condense(request)
 

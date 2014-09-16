@@ -79,3 +79,38 @@ class InitializeTests(TestCase):
         """
         get_app_mock.return_value = self.mockapp.models
         self.assertEqual(condenser.get_model('testapplication1', 'modela'), self.mockapp.models.modela)
+
+class CondenserTests(TestCase):
+
+    def test_condenser_initialize(self):
+        """
+        Tests that the condenser class initializes properly, setting the instance's
+        condensed and canon members properly
+        """
+        pass
+
+    def test_condenser_get_canon(self):
+        """
+        Tests that the get_canon method properly returns the object that will be canon
+        """
+        pass
+
+    def test_condenser_get_condensed(self):
+        """
+        tests that the get_condensed method properly returns the list of objects
+        that will be condensed
+        """
+        pass
+
+    def test_condenser_delete_condensed(self):
+        """
+        This tests that the condensed objects are deleted
+        """
+        pass
+
+    def test_condenser_move_relations(self):
+        """
+        This tests that the relations on the objects being condensed (deleted)
+        are remapped to the "canonical" object.
+        """
+        pass
