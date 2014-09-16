@@ -58,14 +58,24 @@ class InitializeTests(TestCase):
                 #"Did not retrieve list of models properly"
             )
 
-    @mock.patch('condenser.get_app')
-    def test_get_model_fields(self, get_app_mock):
+    @mock.patch('condenser.get_model')
+    def test_get_model_fields(self, get_model_mock):
         """
         Test whether we can get the model's fields properly
         """
         
-        get_app_mock.return_value = self.mockapp.models
+        self.mockapp.models.modela._meta.get_all_field_names.return_value = "testvalue"
+        get_model_mock.return_value = self.mockapp.models.modela
         fields = condenser.get_model_fields('testapplication1', 'modela')
         
         # This ensures that modela._meta.get_all_field_names is called
         self.mockapp.models.modela._meta.get_all_field_names.assert_called_with()
+        self.assertEqual(fields, 'testvalue')
+
+    @mock.patch('condenser.get_app')
+    def test_get_model_method(self, get_app_mock):
+        """
+        Test whether the get_model function gets the right model
+        """
+        get_app_mock.return_value = self.mockapp.models
+        self.assertEqual(condenser.get_model('testapplication1', 'modela'), self.mockapp.models.modela)

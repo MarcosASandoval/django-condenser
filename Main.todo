@@ -37,10 +37,10 @@ Sequece of events:
 			[ ] TODO ajax: submit search terms and app, model, and field selection
 	11. Create search query based on selections
 		Backend:
-			[ ] TODO method to return query
+			[x] TODO method to return query
 	12. Return list of objects from query
 		Backend:
-			[ ] TODO GET: view returning list of objects
+			[x] TODO GET: view returning list of objects
 	13. Select 'canonical' object
 	14. Select objects to condense into canonical object
 	15. Submit selections

@@ -32,8 +32,23 @@ def get_app_models(app):
     return models_list
 
 def get_model_fields(app, model):
-    module = get_app(app)
-
-    model = getattr(module, model)
+    model = get_model(app, model)
     fields = model._meta.get_all_field_names()
     return fields
+
+def get_model(app, model):
+    module = get_app(app)
+    model = getattr(module, model)
+    return model
+
+class condenser:
+    
+    def __init__(self, app, model):
+        self.app = get_app(app)
+        self.model = getattr(self.app, model)
+
+    def set_canon(self, canon_id):
+        pass
+
+    def set_condensed(self, condensed):
+        pass
