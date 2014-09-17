@@ -41,14 +41,25 @@ def get_model(app, model):
     model = getattr(module, model)
     return model
 
-class condenser:
+class Condenser:
     
     def __init__(self, app, model):
         self.app = get_app(app)
         self.model = getattr(self.app, model)
 
-    def set_canon(self, canon_id):
-        pass
+    def get_object(self, canon_id):
+        return self.model.objects.get(id=canon_id)
 
-    def set_condensed(self, condensed):
-        pass
+    def get_condensed_list(self, condensed):
+        condensed_list = []
+        try:
+            if type(condensed) is not list:
+                raise TypeError('Expected a list')
+        except TypeError as e:
+            print e.message
+
+        for id in condensed:
+            obj = self.get_object(id)
+            condensed_list.append(obj)
+
+        return condensed_list
