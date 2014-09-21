@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db.models import get_app
+from django.db import IntegrityError
 import inspect
 
 def get_installed_apps():
@@ -47,8 +48,8 @@ class Condenser:
         self.app = get_app(app)
         self.model = getattr(self.app, model)
 
-    def get_object(self, canon_id):
-        return self.model.objects.get(id=canon_id)
+    def get_object(self, obj_id):
+        return self.model.objects.get(id=obj_id)
 
     def get_condensed_list(self, condensed):
         condensed_list = []
@@ -56,10 +57,52 @@ class Condenser:
             if type(condensed) is not list:
                 raise TypeError('Expected a list')
         except TypeError as e:
-            print e.message
+            #print e.message
+            pass
 
         for id in condensed:
             obj = self.get_object(id)
             condensed_list.append(obj)
 
         return condensed_list
+
+    def get_related_objects(self, model):
+        related_objects = []
+        for relation_manager in model._meta.get_all_related_objects():
+            relation_accessor = relation_manager.get_accessor_name()
+
+            related_objects.append((
+                    relation_manager.field.name,
+                    getattr(model, relation_accessor).all()
+                ))
+
+        return related_objects
+
+    def delete_condensed(self, condensed):
+        try:
+            if type(condensed) is not list:
+                raise TypeError("Expected a list")
+
+            for obj in condensed:
+                obj.delete()
+        except TypeError as e:
+            pass
+
+    def move_relations(self, canon, condensed):
+        """
+        Moves the related objects from the condensed object to the canon object. If the
+        related object violates a unique_together constraint it gets deleted. This is found
+        by catching an IntegrityError exception while calling the object's save method.
+
+        TODO: ensure that all DB engines raise an IntegrityError exception when encountering
+        a unique or duplicate constraint error.
+        """
+        related_objects = self.get_related_objects(condensed)
+
+        for field, objs in related_objects:
+            for obj in objs:
+                setattr(obj, field, canon)
+                try:
+                    obj.save()
+                except IntegrityError as e:
+                    obj.delete()
