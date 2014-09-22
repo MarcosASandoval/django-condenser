@@ -43,7 +43,7 @@ def get_model(app, model):
     return model
 
 class Condenser:
-    
+
     def __init__(self, app, model):
         self.app = get_app(app)
         self.model = getattr(self.app, model)
@@ -91,8 +91,9 @@ class Condenser:
     def move_relations(self, canon, condensed):
         """
         Moves the related objects from the condensed object to the canon object. If the
-        related object violates a unique_together constraint it gets deleted. This is found
-        by catching an IntegrityError exception while calling the object's save method.
+        related object violates a unique_together constraint when its relationship is changed
+        it gets deleted. This is found by catching an IntegrityError exception while calling
+        the object's save method.
 
         TODO: ensure that all DB engines raise an IntegrityError exception when encountering
         a unique or duplicate constraint error.
@@ -106,3 +107,20 @@ class Condenser:
                     obj.save()
                 except IntegrityError as e:
                     obj.delete()
+
+    def move_relations_multiple(self, canon, condensed_list):
+        for obj in condensed_list:
+            self.move_relations(canon, obj)
+
+    def condense(self, canon_id, condensed_ids):
+
+        self.condense_no_delete(canon_id, condensed_ids)
+
+        condensed = self.get_condensed_list(condensed_ids)
+        self.delete_condensed(condensed)
+
+    def condense_no_delete(self, canon_id, condensed_ids):
+
+        canon = self.get_object(canon_id)
+        condensed = self.get_condensed_list(condensed_ids)
+        self.move_relations_multiple(canon, condensed)

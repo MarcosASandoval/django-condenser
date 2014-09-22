@@ -13,7 +13,7 @@ class CondenserTests(TestCase):
 
     def tearDown(self):
         self.patcher.stop()
-        
+
     def test_condenser_initialize(self):
         """
         Tests that the condenser class initializes properly, setting the instance's
@@ -35,7 +35,7 @@ class CondenserTests(TestCase):
 
         con = Condenser('app', 'modela')
         obj = con.get_object(id_str)
-        
+
         self.app_mock.modela.objects.get.assert_called_with(id=id_str)
         self.assertEqual(obj, mock.sentinel.some_object)
 
@@ -49,11 +49,11 @@ class CondenserTests(TestCase):
         get_object_mock.return_value = 'some'
 
         condense_list = ['2', '3', '4', '5']
-        expected_list = ['some' for i in range(len(condense_list))]
+        expected_list = ['some'] * len(condense_list)
 
         con = Condenser('app', 'modela')
         condensed = con.get_condensed_list(condense_list)
-        
+
         self.assertEqual(condensed, expected_list)
 
     def test_condenser_get_condensed_list_without_list_raises_exception(self):
@@ -73,7 +73,7 @@ class CondenserTests(TestCase):
         con = Condenser('app', 'modela')
 
         obj_mock = mock.MagicMock()
-        condensed_list = [obj_mock for i in range(5)]
+        condensed_list = [obj_mock] * 5
 
         con.delete_condensed(condensed_list)
 
@@ -95,9 +95,9 @@ class CondenserTests(TestCase):
         is remapped to the "canonical" object.
         """
         obj_mock = mock.MagicMock()
-        da_list = [obj_mock for i in range(5)]
-        get_related_objects_mock.return_value = [('related', da_list) for i in range(10)]
-        
+        da_list = [obj_mock] * 5
+        get_related_objects_mock.return_value = [('related', da_list)] * 10
+
         canon_mock = mock.MagicMock()
         condensed_mock = mock.MagicMock()
 
@@ -112,20 +112,36 @@ class CondenserTests(TestCase):
         """
         This tests that the move_relations method deletes the object when an IntegrityError
         exception is raised. Going to have to look in to the exceptions that each database
-        engine will raise when encountering a duplicate key or unique contraint error
+        engine will raise when encountering a unique_together contraint error
         """
         obj_mock = mock.MagicMock()
         obj_mock.save.side_effect = IntegrityError
         get_related_objects_mock.return_value = [('related', [obj_mock])]
-        
+
         canon_mock = mock.MagicMock()
         condensed_mock = mock.MagicMock()
 
         con = Condenser('app', 'modela')
         con.move_relations(canon_mock, condensed_mock)
-        
+
         obj_mock.save.assert_called_with()
         obj_mock.delete.assert_called_with()
+
+    @mock.patch.object(Condenser, 'move_relations')
+    def test_condenser_move_relations_multiple(self, mrm_mock):
+        """
+        Tests that we're moving the relationships of multiple objects
+        """
+        con = Condenser('app', 'modela')
+
+        canon_mock = mock.MagicMock()
+        mock_obj = mock.MagicMock()
+        obj_list = [mock_obj] * 5
+
+        con.move_relations_multiple(canon_mock, obj_list)
+
+        mrm_mock.assert_called_with(canon_mock, mock_obj)
+        self.assertEqual(mrm_mock.call_count, 5)
 
     def test_condenser_get_related_objects(self):
         """
@@ -139,9 +155,8 @@ class CondenserTests(TestCase):
         relation_manager_mock.get_accessor_name.side_effect = related_objects
 
         model_mock = mock.MagicMock()
-        model_mock._meta.get_all_related_objects.return_value = [
-                relation_manager_mock for i in range(len(related_objects))
-            ]
+        model_mock._meta.get_all_related_objects.return_value = \
+            [relation_manager_mock] * len(related_objects)
 
         result = con.get_related_objects(model_mock)
 
@@ -162,3 +177,45 @@ class CondenserTests(TestCase):
             ) for x in related_objects]
 
         self.assertEqual(result, expected_list)
+
+    @mock.patch.object(Condenser, 'move_relations_multiple')
+    @mock.patch.object(Condenser, 'get_condensed_list')
+    @mock.patch.object(Condenser, 'get_object')
+    def test_condenser_condense_no_delete(self, go_mock, gcl_mock, mrm_mock):
+        """
+        Tests that the condense_no_delete method calls a bunch of other methods properly
+        """
+        canon_mock = mock.MagicMock()
+        cond_mock = mock.MagicMock()
+        go_mock.return_value = canon_mock
+        gcl_mock.return_value = cond_mock
+
+        canon_id = '1'
+        condensed_ids = ['2', '3', '4', '5']
+
+        con = Condenser('app', 'modela')
+        con.condense_no_delete(canon_id, condensed_ids)
+
+        go_mock.assert_called_with(canon_id)
+        gcl_mock.assert_called_with(condensed_ids)
+        mrm_mock.assert_called_with(canon_mock, cond_mock)
+
+    @mock.patch.object(Condenser, 'delete_condensed')
+    @mock.patch.object(Condenser, 'get_condensed_list')
+    @mock.patch.object(Condenser, 'condense_no_delete')
+    def test_condenser_condense(self, cnd_mock, gcl_mock, dc_mock):
+        """
+        Test that the condense method calls a bunch of other methods properly
+        """
+        cond_mock = mock.MagicMock()
+        gcl_mock.return_value = cond_mock
+
+        canon_id = '1'
+        cond_ids = ['2', '3', '4', '5']
+
+        con = Condenser('app', 'modela')
+        con.condense(canon_id, cond_ids)
+
+        cnd_mock.assert_called_with(canon_id, cond_ids)
+        gcl_mock.assert_called_with(cond_ids)
+        dc_mock.assert_called_with(cond_mock)

@@ -112,13 +112,14 @@ class condenseViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, 'nothing to condense')
 
-    @mock.patch('condenser.views.condenser')
-    def test_condense_calls_condense(self, condenser_mock):
-        """
-        Tests that the condense view instantiates the condenser class
-        """
-        request = self.req.post('condenser/condense', {'canon': '1', 'condense': ['1','2','3','4']})
-        response = views.condense(request)
-
-        self.assertEqual(response.status_code, 200)
-        condenser_mock.assert_called_with()
+# TODO: Finish this test
+#    @mock.patch('condenser.views.condenser')
+#    def test_condense_calls_condense(self, condenser_mock):
+#        """
+#        Tests that the condense view instantiates the condenser class
+#        """
+#        request = self.req.post('condenser/condense', {'canon': '1', 'condense': ['1','2','3','4']})
+#        response = views.condense(request)
+#
+#        self.assertEqual(response.status_code, 200)
+#        condenser_mock.assert_called_with()
