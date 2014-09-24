@@ -3,18 +3,25 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.core import serializers
 from condenser import get_installed_apps, get_app_models, get_model_fields, get_model
+from condenser import Condenser
 import json
 
 def index(request):
     return render(request, 'condenser/index.html')
 
+# TODO: Run this in a transaction!!!
 def condense(request):
-    if request.method == 'POST' and 'canon' in request.POST and 'condense' in request.POST:
+    if request.method == 'POST' and 'canon' in request.POST and 'condensed' in request.POST:
         canon = request.POST['canon']
-        condense = request.POST.getlist('condense')
-    else:
-        stuff = 'nothing to condense'
-    return HttpResponse(stuff)
+        condensed = request.POST.getlist('condensed')
+        con = Condenser(request.POST['app'], request.POST['model'])
+        if 'delete' in request.POST:
+            con.condense(canon, condensed)
+        else:
+            con.condense_no_delete(canon, condensed)
+
+    result = con.result
+    return HttpResponse(result)
 
 def inspector(request):
     if 'app' in request.GET and 'model' in request.GET and 'field' in request.GET and 'value' in request.GET:
@@ -27,5 +34,5 @@ def inspector(request):
         result = json.dumps(get_app_models(request.GET['app']))
     else:
         result = json.dumps(get_installed_apps())
-        
+
     return HttpResponse(result)

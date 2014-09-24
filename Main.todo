@@ -49,9 +49,9 @@ Sequece of events:
 	16. Condense!
 		Backend:
 			[ ] TODO POST: process incoming data
-			[ ] TODO method that grabs all related objects
-			[ ] TODO method that reassigns all related objects to 'canonical' object
-			[ ] TODO method that then deletes all other objects
+			[x] TODO method that grabs all related objects
+			[x] TODO method that reassigns all related objects to 'canonical' object
+			[x] TODO method that then deletes all other objects
 			[ ] TODO method returning results
 	17. Display results
 		Backend:

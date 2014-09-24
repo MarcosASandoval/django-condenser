@@ -112,14 +112,59 @@ class condenseViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, 'nothing to condense')
 
-# TODO: Finish this test
-#    @mock.patch('condenser.views.condenser')
-#    def test_condense_calls_condense(self, condenser_mock):
-#        """
-#        Tests that the condense view instantiates the condenser class
-#        """
-#        request = self.req.post('condenser/condense', {'canon': '1', 'condense': ['1','2','3','4']})
-#        response = views.condense(request)
-#
-#        self.assertEqual(response.status_code, 200)
-#        condenser_mock.assert_called_with()
+    @mock.patch('condenser.views.Condenser')
+    def test_condense_calls_condense(self, condenser_mock):
+        """
+        Tests that the condense view instantiates the condenser class
+        """
+        expected_response = "Yep, totes condensed"
+        mock_instance = condenser_mock.return_value
+        mock_instance.result = expected_response
+
+        request = self.req.post(
+                'condenser/condense',
+                {
+                    'canon': '1',
+                    'condensed': ['1','2','3','4'],
+                    'app': 'app1',
+                    'model': 'modela',
+                    'delete': True
+                }
+            )
+        response = views.condense(request)
+
+        self.assertEqual(response.status_code, 200)
+        condenser_mock.assert_called_with(request.POST['app'], request.POST['model'])
+        mock_instance.condense.assert_called_with(
+                request.POST['canon'],
+                request.POST.getlist('condensed')
+            )
+        self.assertEqual(response.content, expected_response)
+
+    @mock.patch('condenser.views.Condenser')
+    def test_condense_calls_condense_no_delete(self, condenser_mock):
+        """
+        Tests that the condense view instantiates the condenser class
+        """
+        expected_response = "Yep. Totes condensed, but not deleted"
+        mock_instance = condenser_mock.return_value
+        mock_instance.result = expected_response
+
+        request = self.req.post(
+                'condenser/condense',
+                {
+                    'canon': '1',
+                    'condensed': ['1','2','3','4'],
+                    'app': 'app1',
+                    'model': 'modela'
+                }
+            )
+        response = views.condense(request)
+
+        self.assertEqual(response.status_code, 200)
+        condenser_mock.assert_called_with(request.POST['app'], request.POST['model'])
+        mock_instance.condense_no_delete.assert_called_with(
+                request.POST['canon'],
+                request.POST.getlist('condensed')
+            )
+        self.assertEqual(response.content, expected_response)

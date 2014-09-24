@@ -43,7 +43,8 @@ def get_model(app, model):
     return model
 
 class Condenser:
-
+    result = "Nothing condensed"
+    # TODO: Add result member that will be set with the outcome of the condense methods
     def __init__(self, app, model):
         self.app = get_app(app)
         self.model = getattr(self.app, model)
@@ -113,14 +114,22 @@ class Condenser:
             self.move_relations(canon, obj)
 
     def condense(self, canon_id, condensed_ids):
+        # TODO: raise exceptions when needed
+        try:
+            self.condense_no_delete(canon_id, condensed_ids)
 
-        self.condense_no_delete(canon_id, condensed_ids)
-
-        condensed = self.get_condensed_list(condensed_ids)
-        self.delete_condensed(condensed)
+            condensed = self.get_condensed_list(condensed_ids)
+            self.delete_condensed(condensed)
+            self.result = "Successfully condensed objects"
+        except Exception as e:
+            self.result = e.message
 
     def condense_no_delete(self, canon_id, condensed_ids):
-
-        canon = self.get_object(canon_id)
-        condensed = self.get_condensed_list(condensed_ids)
-        self.move_relations_multiple(canon, condensed)
+        # TODO: raise exceptions when needed
+        try:
+            canon = self.get_object(canon_id)
+            condensed = self.get_condensed_list(condensed_ids)
+            self.move_relations_multiple(canon, condensed)
+            self.result = "Successfully condensed objects"
+        except Exception as e:
+            self.result = e.message
